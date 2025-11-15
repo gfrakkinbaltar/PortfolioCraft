@@ -1,0 +1,11 @@
+{
+  "name": "portfoliocraft",
+  "version": "1.0.0",
+  "description": "PortfolioCraft - Professional web application",
+  "author": "Gaius",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gaius/portfoliocraft"
+  }
+}
