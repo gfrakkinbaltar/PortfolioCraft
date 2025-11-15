@@ -7,5 +7,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/gaius/portfoliocraft"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
   }
 }
