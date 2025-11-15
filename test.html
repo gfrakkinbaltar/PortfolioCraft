@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortfolioCraft - Test Platform</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Coda&family=Hedvig+Letters+Sans&family=Jersey+15&family=Jersey+20+Charted&family=Liter&family=Luckiest+Guy&family=Oranienbaum&family=Press+Start+2P&family=Quattrocento+Sans&family=Sorts+Mill+Goudy&family=Unna&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+    <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root {
+            --bg-primary: #FAFAFA;
+            --text-primary: #1A1A1A;
+            --text-secondary: #4A4A4A;
+            --accent: #E8D5C4;
+            --accent-dark: #D4C4B0;
+            --success: #2D5A27;
+            --warning: #B8860B;
+            --error: #8B0000;
+        }
+        
+        body {
+            font-family: 'Oranienbaum', serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+        
+        .font-display {
+            font-family: 'Sorts Mill Goudy', serif;
+        }
+        
+        .font-body {
+            font-family: 'Liter', sans-serif;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #F0F0F0;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-dark);
+        }
+        
+        /* Navigation */
+        .nav-header {
+            background: rgba(250, 250, 250, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        /* Hero Section */
+        .hero-test {
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Test Cards */
+        .test-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .test-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border-color: var(--accent);
+        }
+        
+        .test-card.success {
+            border-color: var(--success);
+        }
+        
+        .test-card.error {
+            border-color: var(--error);
+        }
+        
+        .test-card.warning {
+            border-color: var(--warning);
+        }
+        
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 40px 0;
+        }
+        
+        /* Interactive Elements */
+        .interactive-demo {
+            background: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .demo-button {
+            background: var(--accent);
+            color: var(--text-primary);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 8px;
+        }
+        
+        .demo-button:hover {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .demo-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #E0E0E0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin: 8px 0;
+        }
+        
+        .demo-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(232, 213, 196, 0.1);
+        }
+        
+        /* Particle Canvas */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        /* Animation Classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stagger-delay-1 { animation-delay: 0.1s; }
+        .stagger-delay-2 { animation-delay: 0.2s; }
+        .stagger-delay-3 { animation-delay: 0.3s; }
+        .stagger-delay-4 { animation-delay: 0.4s; }
+        .stagger-delay-5 { animation-delay: 0.5s; }
+        .stagger-delay-6 { animation-delay: 0.6s; }
+        
+        /* Test Results */
+        .test-results {
+            background: #F8F9FA;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .test-result-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        .test-result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .test-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .test-status.pass {
+            background: rgba(45, 90, 39, 0.1);
+            color: var(--success);
+        }
+        
+        .test-status.fail {
+            background: rgba(139, 0, 0, 0.1);
+            color: var(--error);
+        }
+        
+        .test-status.warning {
+            background: rgba(184, 134, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .test-card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background Canvas -->
+    <canvas id="particle-canvas"></canvas>
+    
+    <!-- Navigation Header -->
+    <nav class="nav-header fixed top-0 left-0 right-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <h1 class="font-display text-2xl font-bold text-primary">PortfolioCraft</h1>
+                <span class="text-sm text-secondary">Platform Test</span>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="index.html" class="text-secondary hover:text-primary transition-colors">Builder</a>
+                <a href="templates.html" class="text-secondary hover:text-primary transition-colors">Templates</a>
+                <a href="resume.html" class="text-secondary hover:text-primary transition-colors">Resume</a>
+                <button class="demo-button" onclick="runAllTests()">Run All Tests</button>
+            </div>
+            
+            <div class="md:hidden">
+                <button id="mobile-menu-btn" class="p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-test flex items-center justify-center text-white pt-20">
+        <div class="hero-content text-center py-16">
+            <h2 class="font-display text-4xl md:text-5xl font-bold mb-4" data-splitting>
+                Platform Test Suite
+            </h2>
+            <p class="text-lg opacity-90 max-w-2xl mx-auto mb-8">
+                Comprehensive testing of all PortfolioCraft features and functionality
+            </p>
+            <div class="flex items-center justify-center space-x-4">
+                <button class="demo-button" onclick="runAllTests()">Run All Tests</button>
+                <button class="demo-button" onclick="clearResults()">Clear Results</button>
+            </div>
+        </div>
+        
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Test Results -->
+    <main class="min-h-screen bg-gray-50 py-8">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="test-results fade-in stagger-delay-1">
+                <h3 class="font-display text-xl font-bold mb-4">Test Results</h3>
+                <div id="test-results-container">
+                    <div class="text-secondary">No tests run yet. Click "Run All Tests" to begin.</div>
+                </div>
+            </div>
+            
+            <!-- Feature Test Grid -->
+            <div class="feature-grid fade-in stagger-delay-2">
+                <!-- Builder Interface Test -->
+                <div class="test-card" onclick="testBuilderInterface()">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-display text-lg font-bold">Portfolio Builder</h4>
+                        <div class="w-3 h-3 bg-gray-300 rounded-full" id="builder-status"></div>
+                    </div>
+                    <p class="text-secondary mb-4">Test drag-and-drop functionality, section management, and real-time preview.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-secondary">Features:</span>
+                        <button class="demo-button text-sm" onclick="event.stopPropagation(); testBuilderInterface()">Test</button>
+                    </div>
+                </div>
+                
+                <!-- Template System Test -->
+                <div class="test-card" onclick="testTemplateSystem()">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-display text-lg font-bold">Template System</h4>
+                        <div class="w-3 h-3 bg-gray-300 rounded-full" id="template-status"></div>
+                    </div>
+                    <p class="text-secondary mb-4">Test template loading, filtering, and preview functionality.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-secondary">Features:</span>
+                        <button class="demo-button text-sm" onclick="event.stopPropagation(); testTemplateSystem()">Test</button>
+                    </div>
+                </div>
+                
+                <!-- Resume Builder Test -->
+                <div class="test-card" onclick="testResumeBuilder()">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-display text-lg font-bold">Resume Builder</h4>
+                        <div class="w-3 h-3 bg-gray-300 rounded-full" id="resume-status"></div>
+                    </div>
+                    <p class="text-secondary mb-4">Test interactive timeline, skills visualization, and PDF export.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-secondary">Features:</span>
+                        <button class="demo-button text-sm" onclick="event.stopPropagation(); testResumeBuilder()">Test</button>
+                    </div>
+                </div>
+                
+                <!-- Animation System Test -->
+                <div class="test-card" onclick="testAnimationSystem()">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-display text-lg font-bold">Animation System</h4>
+                        <div class="w-3 h-3 bg-gray-300 rounded-full" id="animation-status"></div>
+                    </div>
+                    <p class="text-secondary mb-4">Test particle systems, scroll animations, and micro-interactions.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-secondary">Features:</span>
+                        <button class="demo-button text-sm" onclick="event.stopPropagation(); testAnimationSystem()">Test</button>
+                    </div>
+                </div>
+                
+                <!-- 3D Effects Test -->
+                <div class="test-card" onclick="test3DEffects()">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-display text-lg font-bold">3D Effects</h4>
+                        <div class="w-3 h-3 bg-gray-300 rounded-full" id="3d-status"></div>
+                    </div>
+                    <p class="text-secondary mb-4">Test 3D hero sections, particle effects, and interactive elements.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-secondary">Features:</span>
+                        <button class="demo-button text-sm" onclick="event.stopPropagation(); test3DEffects()">Test</button>
+                    </div>
+                </div>
+                
+                <!-- Responsive Design Test -->
+                <div class="test-card" onclick="testResponsiveDesign()">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-display text-lg font-bold">Responsive Design</h4>
+                        <div class="w-3 h-3 bg-gray-300 rounded-full" id="responsive-status"></div>
+                    </div>
+                    <p class="text-secondary mb-4">Test mobile responsiveness and cross-device compatibility.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-secondary">Features:</span>
+                        <button class="demo-button text-sm" onclick="event.stopPropagation(); testResponsiveDesign()">Test</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Interactive Demo Section -->
+            <div class="interactive-demo fade-in stagger-delay-3">
+                <h3 class="font-display text-xl font-bold mb-4">Interactive Demo</h3>
+                <p class="text-secondary mb-4">Test the interactive features of the platform:</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-medium mb-3">Text Animation</h4>
+                        <input type="text" class="demo-input" id="animation-text" placeholder="Enter text to animate" value="Hello PortfolioCraft!">
+                        <button class="demo-button" onclick="animateText()">Animate Text</button>
+                        <div id="animated-text-output" class="mt-4 p-4 bg-gray-100 rounded min-h-16 flex items-center justify-center text-lg font-display"></div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium mb-3">Color Customization</h4>
+                        <input type="color" class="demo-input w-20 h-12" id="color-picker" value="#E8D5C4" onchange="updateColors(this.value)">
+                        <p class="text-sm text-secondary mt-2">Change the accent color of the platform</p>
+                        <div id="color-preview" class="mt-4 p-4 rounded" style="background-color: #E8D5C4;">
+                            <p class="text-center font-medium">Color Preview</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h4 class="font-medium mb-3">Particle System Control</h4>
+                    <div class="flex items-center space-x-4">
+                        <button class="demo-button" onclick="toggleParticles()">Toggle Particles</button>
+                        <button class="demo-button" onclick="increaseParticles()">More Particles</button>
+                        <button class="demo-button" onclick="decreaseParticles()">Fewer Particles</button>
+                        <span class="text-sm text-secondary">Particle Count: <span id="particle-count">50</span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Metrics -->
+            <div class="interactive-demo fade-in stagger-delay-4">
+                <h3 class="font-display text-xl font-bold mb-4">Performance Metrics</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-accent mb-2" id="load-time">-</div>
+                        <p class="text-secondary">Page Load Time</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-accent mb-2" id="animation-fps">-</div>
+                        <p class="text-secondary">Animation FPS</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-accent mb-2" id="memory-usage">-</div>
+                        <p class="text-secondary">Memory Usage</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-8">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-secondary">&copy; 2024 PortfolioCraft. Crafted with passion for creative professionals.</p>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script>
+        // Test suite state
+        let testResults = [];
+        let particleSystem = null;
+        let particleCount = 50;
+        let particlesEnabled = true;
+        
+        // Initialize particle system
+        function initParticleSystem() {
+            const canvas = document.getElementById('particle-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let mouse = { x: 0, y: 0 };
+            
+            const resizeCanvas = () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            };
+            
+            const createParticles = () => {
+                particles = [];
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        size: Math.random() * 3 + 1,
+                        opacity: Math.random() * 0.5 + 0.2
+                    });
+                }
+            };
+            
+            const updateParticles = () => {
+                if (!particlesEnabled) return;
+                
+                particles.forEach(particle => {
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    
+                    const dx = mouse.x - particle.x;
+                    const dy = mouse.y - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 100) {
+                        particle.vx -= dx * 0.00005;
+                        particle.vy -= dy * 0.00005;
+                    }
+                    
+                    if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+                    if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+                    
+                    particle.x = Math.max(0, Math.min(canvas.width, particle.x));
+                    particle.y = Math.max(0, Math.min(canvas.height, particle.y));
+                });
+            };
+            
+            const drawParticles = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                if (!particlesEnabled) return;
+                
+                particles.forEach((particle, i) => {
+                    particles.slice(i + 1).forEach(otherParticle => {
+                        const dx = particle.x - otherParticle.x;
+                        const dy = particle.y - otherParticle.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 150) {
+                            ctx.beginPath();
+                            ctx.moveTo(particle.x, particle.y);
+                            ctx.lineTo(otherParticle.x, otherParticle.y);
+                            ctx.strokeStyle = `rgba(232, 213, 196, ${0.1 * (1 - distance / 150)})`;
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    });
+                });
+                
+                particles.forEach(particle => {
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(232, 213, 196, ${particle.opacity})`;
+                    ctx.fill();
+                });
+            };
+            
+            const animate = () => {
+                updateParticles();
+                drawParticles();
+                requestAnimationFrame(animate);
+            };
+            
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                createParticles();
+            });
+            
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            });
+            
+            resizeCanvas();
+            createParticles();
+            animate();
+            
+            return {
+                updateParticleCount: (newCount) => {
+                    particleCount = newCount;
+                    createParticles();
+                },
+                toggle: () => {
+                    particlesEnabled = !particlesEnabled;
+                }
+            };
+        }
+        
+        // Test functions
+        function addTestResult(name, status, message) {
+            testResults.push({ name, status, message, timestamp: new Date() });
+            updateTestResults();
+            updateTestStatus(name, status);
+        }
+        
+        function updateTestResults() {
+            const container = document.getElementById('test-results-container');
+            if (!container) return;
+            
+            if (testResults.length === 0) {
+                container.innerHTML = '<div class="text-secondary">No tests run yet. Click "Run All Tests" to begin.</div>';
+                return;
+            }
+            
+            const html = testResults.map(result => `
+                <div class="test-result-item">
+                    <div>
+                        <strong>${result.name}</strong>
+                        <p class="text-sm text-secondary">${result.message}</p>
+                    </div>
+                    <span class="test-status ${result.status}">${result.status.toUpperCase()}</span>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        }
+        
+        function updateTestStatus(testName, status) {
+            const statusMap = {
+                'Portfolio Builder': 'builder-status',
+                'Template System': 'template-status',
+                'Resume Builder': 'resume-status',
+                'Animation System': 'animation-status',
+                '3D Effects': '3d-status',
+                'Responsive Design': 'responsive-status'
+            };
+            
+            const elementId = statusMap[testName];
+            if (elementId) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.className = `w-3 h-3 rounded-full ${
+                        status === 'pass' ? 'bg-green-500' :
+                        status === 'fail' ? 'bg-red-500' :
+                        status === 'warning' ? 'bg-yellow-500' : 'bg-gray-300'
+                    }`;
+                }
+            }
+        }
+        
+        function runAllTests() {
+            testResults = [];
+            updateTestResults();
+            
+            // Reset all status indicators
+            ['builder-status', 'template-status', 'resume-status', 'animation-status', '3d-status', 'responsive-status'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.className = 'w-3 h-3 bg-gray-300 rounded-full';
+                }
+            });
+            
+            // Run tests with delays for visual feedback
+            setTimeout(() => testBuilderInterface(), 500);
+            setTimeout(() => testTemplateSystem(), 1000);
+            setTimeout(() => testResumeBuilder(), 1500);
+            setTimeout(() => testAnimationSystem(), 2000);
+            setTimeout(() => test3DEffects(), 2500);
+            setTimeout(() => testResponsiveDesign(), 3000);
+        }
+        
+        function testBuilderInterface() {
+            try {
+                // Test drag and drop functionality
+                const dragItems = document.querySelectorAll('.drag-item');
+                const dropZones = document.querySelectorAll('.drop-zone');
+                
+                if (dragItems.length > 0 && dropZones.length > 0) {
+                    addTestResult('Portfolio Builder', 'pass', 'Drag and drop interface is properly initialized');
+                } else {
+                    addTestResult('Portfolio Builder', 'warning', 'Drag and drop elements not found on this page');
+                }
+                
+                // Test customization controls
+                const colorPickers = document.querySelectorAll('input[type="color"]');
+                if (colorPickers.length > 0) {
+                    addTestResult('Portfolio Builder', 'pass', 'Color customization controls are available');
+                }
+                
+                // Test device preview
+                const deviceButtons = document.querySelectorAll('.device-btn');
+                if (deviceButtons.length > 0) {
+                    addTestResult('Portfolio Builder', 'pass', 'Device preview controls are available');
+                }
+                
+            } catch (error) {
+                addTestResult('Portfolio Builder', 'fail', `Error: ${error.message}`);
+            }
+        }
+        
+        function testTemplateSystem() {
+            try {
+                // Test template cards
+                const templateCards = document.querySelectorAll('.template-card');
+                if (templateCards.length > 0) {
+                    addTestResult('Template System', 'pass', `${templateCards.length} template cards found`);
+                } else {
+                    addTestResult('Template System', 'warning', 'No template cards found on this page');
+                }
+                
+                // Test filter functionality
+                const filterTabs = document.querySelectorAll('.filter-tab');
+                if (filterTabs.length > 0) {
+                    addTestResult('Template System', 'pass', 'Template filtering system is available');
+                }
+                
+                // Test modal functionality
+                const modal = document.getElementById('template-modal');
+                if (modal) {
+                    addTestResult('Template System', 'pass', 'Template preview modal is available');
+                }
+                
+            } catch (error) {
+                addTestResult('Template System', 'fail', `Error: ${error.message}`);
+            }
+        }
+        
+        function testResumeBuilder() {
+            try {
+                // Test resume form inputs
+                const resumeInputs = document.querySelectorAll('#full-name, #professional-title, #email');
+                if (resumeInputs.length > 0) {
+                    addTestResult('Resume Builder', 'pass', 'Resume form inputs are available');
+                } else {
+                    addTestResult('Resume Builder', 'warning', 'Resume form inputs not found on this page');
+                }
+                
+                // Test skills chart
+                const skillsChart = document.getElementById('skills-chart');
+                if (skillsChart) {
+                    addTestResult('Resume Builder', 'pass', 'Skills visualization chart is available');
+                }
+                
+                // Test timeline
+                const timeline = document.querySelector('.timeline');
+                if (timeline) {
+                    addTestResult('Resume Builder', 'pass', 'Interactive timeline is available');
+                }
+                
+            } catch (error) {
+                addTestResult('Resume Builder', 'fail', `Error: ${error.message}`);
+            }
+        }
+        
+        function testAnimationSystem() {
+            try {
+                // Test particle system
+                if (particleSystem) {
+                    addTestResult('Animation System', 'pass', 'Particle system is running');
+                } else {
+                    addTestResult('Animation System', 'warning', 'Particle system not initialized');
+                }
+                
+                // Test anime.js
+                if (typeof anime !== 'undefined') {
+                    addTestResult('Animation System', 'pass', 'Anime.js library is loaded');
+                } else {
+                    addTestResult('Animation System', 'fail', 'Anime.js library not found');
+                }
+                
+                // Test scroll animations
+                const animatedElements = document.querySelectorAll('.fade-in');
+                if (animatedElements.length > 0) {
+                    addTestResult('Animation System', 'pass', `${animatedElements.length} animated elements found`);
+                }
+                
+            } catch (error) {
+                addTestResult('Animation System', 'fail', `Error: ${error.message}`);
+            }
+        }
+        
+        function test3DEffects() {
+            try {
+                // Test Three.js availability
+                if (typeof THREE !== 'undefined') {
+                    addTestResult('3D Effects', 'pass', 'Three.js library is available');
+                } else {
+                    addTestResult('3D Effects', 'warning', 'Three.js library not loaded (may be loaded on demand)');
+                }
+                
+                // Test Pixi.js for 2D effects
+                if (typeof PIXI !== 'undefined') {
+                    addTestResult('3D Effects', 'pass', 'Pixi.js library is available for 2D effects');
+                }
+                
+                // Test canvas support
+                const canvas = document.createElement('canvas');
+                if (canvas.getContext) {
+                    addTestResult('3D Effects', 'pass', 'Canvas is supported by browser');
+                } else {
+                    addTestResult('3D Effects', 'fail', 'Canvas not supported by browser');
+                }
+                
+            } catch (error) {
+                addTestResult('3D Effects', 'fail', `Error: ${error.message}`);
+            }
+        }
+        
+        function testResponsiveDesign() {
+            try {
+                // Test viewport meta tag
+                const viewport = document.querySelector('meta[name="viewport"]');
+                if (viewport) {
+                    addTestResult('Responsive Design', 'pass', 'Viewport meta tag is present');
+                } else {
+                    addTestResult('Responsive Design', 'fail', 'Viewport meta tag missing');
+                }
+                
+                // Test responsive classes
+                const responsiveElements = document.querySelectorAll('[class*="md:"], [class*="lg:"], [class*="sm:]');
+                if (responsiveElements.length > 0) {
+                    addTestResult('Responsive Design', 'pass', 'Responsive Tailwind classes found');
+                }
+                
+                // Test mobile menu
+                const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+                if (mobileMenuBtn) {
+                    addTestResult('Responsive Design', 'pass', 'Mobile menu button is available');
+                }
+                
+            } catch (error) {
+                addTestResult('Responsive Design', 'fail', `Error: ${error.message}`);
+            }
+        }
+        
+        function clearResults() {
+            testResults = [];
+            updateTestResults();
+            
+            // Reset all status indicators
+            ['builder-status', 'template-status', 'resume-status', 'animation-status', '3d-status', 'responsive-status'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.className = 'w-3 h-3 bg-gray-300 rounded-full';
+                }
+            });
+        }
+        
+        function animateText() {
+            const input = document.getElementById('animation-text');
+            const output = document.getElementById('animated-text-output');
+            
+            if (!input || !output) return;
+            
+            const text = input.value || 'Hello PortfolioCraft!';
+            output.innerHTML = `<span data-typed="${text}"></span>`;
+            
+            if (typeof Typed !== 'undefined') {
+                new Typed(output.querySelector('[data-typed]'), {
+                    strings: [text],
+                    typeSpeed: 50,
+                    showCursor: false,
+                    onComplete: () => {
+                        anime({
+                            targets: output,
+                            scale: [1, 1.05, 1],
+                            duration: 300,
+                            easing: 'easeInOutQuad'
+                        });
+                    }
+                });
+            } else {
+                output.textContent = text;
+            }
+        }
+        
+        function updateColors(color) {
+            const preview = document.getElementById('color-preview');
+            if (preview) {
+                preview.style.backgroundColor = color;
+                
+                // Update CSS custom properties
+                document.documentElement.style.setProperty('--accent', color);
+                
+                // Animate the change
+                anime({
+                    targets: preview,
+                    scale: [1, 1.1, 1],
+                    duration: 400,
+                    easing: 'easeInOutQuad'
+                });
+            }
+        }
+        
+        function toggleParticles() {
+            if (particleSystem) {
+                particleSystem.toggle();
+                particlesEnabled = !particlesEnabled;
+                
+                const button = event.target;
+                button.textContent = particlesEnabled ? 'Disable Particles' : 'Enable Particles';
+            }
+        }
+        
+        function increaseParticles() {
+            particleCount = Math.min(100, particleCount + 10);
+            if (particleSystem) {
+                particleSystem.updateParticleCount(particleCount);
+            }
+            document.getElementById('particle-count').textContent = particleCount;
+        }
+        
+        function decreaseParticles() {
+            particleCount = Math.max(10, particleCount - 10);
+            if (particleSystem) {
+                particleSystem.updateParticleCount(particleCount);
+            }
+            document.getElementById('particle-count').textContent = particleCount;
+        }
+        
+        function updatePerformanceMetrics() {
+            // Calculate page load time
+            const loadTime = performance.now();
+            document.getElementById('load-time').textContent = Math.round(loadTime) + 'ms';
+            
+            // Estimate FPS (simplified)
+            let frameCount = 0;
+            let lastTime = performance.now();
+            
+            function countFrames() {
+                frameCount++;
+                const currentTime = performance.now();
+                
+                if (currentTime - lastTime >= 1000) {
+                    document.getElementById('animation-fps').textContent = frameCount + ' FPS';
+                    frameCount = 0;
+                    lastTime = currentTime;
+                }
+                
+                requestAnimationFrame(countFrames);
+            }
+            
+            requestAnimationFrame(countFrames);
+            
+            // Estimate memory usage (if available)
+            if (performance.memory) {
+                const memoryMB = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+                document.getElementById('memory-usage').textContent = memoryMB + ' MB';
+            } else {
+                document.getElementById('memory-usage').textContent = 'N/A';
+            }
+        }
+        
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            particleSystem = initParticleSystem();
+            updatePerformanceMetrics();
+            
+            // Initialize text effects
+            if (typeof Splitting !== 'undefined') {
+                Splitting();
+                
+                const splitText = document.querySelectorAll('[data-splitting]');
+                splitText.forEach(element => {
+                    const chars = element.querySelectorAll('.char');
+                    anime({
+                        targets: chars,
+                        opacity: [0, 1],
+                        translateY: [20, 0],
+                        duration: 800,
+                        delay: anime.stagger(50),
+                        easing: 'easeOutQuad'
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder - PortfolioCraft</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Coda&family=Hedvig+Letters+Sans&family=Jersey+15&family=Jersey+20+Charted&family=Liter&family=Luckiest+Guy&family=Oranienbaum&family=Press+Start+2P&family=Quattrocento+Sans&family=Sorts+Mill+Goudy&family=Unna&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+    <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root {
+            --bg-primary: #FAFAFA;
+            --text-primary: #1A1A1A;
+            --text-secondary: #4A4A4A;
+            --accent: #E8D5C4;
+            --accent-dark: #D4C4B0;
+            --success: #2D5A27;
+            --warning: #B8860B;
+            --error: #8B0000;
+        }
+        
+        body {
+            font-family: 'Oranienbaum', serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+        
+        .font-display {
+            font-family: 'Sorts Mill Goudy', serif;
+        }
+        
+        .font-body {
+            font-family: 'Liter', sans-serif;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #F0F0F0;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-dark);
+        }
+        
+        /* Navigation */
+        .nav-header {
+            background: rgba(250, 250, 250, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        /* Hero Section */
+        .hero-resume {
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Builder Interface */
+        .resume-builder {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            min-height: 80vh;
+        }
+        
+        .builder-sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid #E0E0E0;
+            border-radius: 12px 0 0 12px;
+        }
+        
+        .builder-main {
+            background: #FFFFFF;
+            border-radius: 0 12px 12px 0;
+        }
+        
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--accent);
+            transform: translateX(-50%);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+        
+        .timeline-content {
+            width: 45%;
+            padding: 20px;
+            background: #F8F9FA;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-left: auto;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-right: auto;
+        }
+        
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content::before {
+            left: -20px;
+            border-right-color: #F8F9FA;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content::before {
+            right: -20px;
+            border-left-color: #F8F9FA;
+        }
+        
+        /* Skills Chart */
+        .skills-chart {
+            width: 100%;
+            height: 400px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #E0E0E0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(232, 213, 196, 0.1);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Custom Buttons */
+        .btn-primary {
+            background: var(--accent);
+            color: var(--text-primary);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid #E0E0E0;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-danger:hover {
+            background: #660000;
+            transform: translateY(-1px);
+        }
+        
+        /* Section Cards */
+        .section-card {
+            background: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .section-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Skills Input */
+        .skill-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .skill-range {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #E0E0E0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .skill-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+        }
+        
+        .skill-range::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: none;
+        }
+        
+        /* Particle Canvas */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        /* Animation Classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stagger-delay-1 { animation-delay: 0.1s; }
+        .stagger-delay-2 { animation-delay: 0.2s; }
+        .stagger-delay-3 { animation-delay: 0.3s; }
+        .stagger-delay-4 { animation-delay: 0.4s; }
+        
+        /* Resume Preview */
+        .resume-preview {
+            background: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            min-height: 800px;
+        }
+        
+        .resume-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .resume-section {
+            margin-bottom: 30px;
+        }
+        
+        .resume-section h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .experience-item {
+            margin-bottom: 20px;
+        }
+        
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+        
+        .experience-title {
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+        
+        .experience-company {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        .experience-period {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .experience-description {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 20px;
+            }
+            
+            .timeline-item::before {
+                left: 20px;
+            }
+            
+            .timeline-content {
+                width: calc(100% - 40px);
+                margin-left: 40px !important;
+                margin-right: 0 !important;
+            }
+            
+            .timeline-content::before {
+                left: -20px !important;
+                right: auto !important;
+                border-right-color: #F8F9FA !important;
+                border-left-color: transparent !important;
+            }
+            
+            .resume-builder {
+                flex-direction: column;
+            }
+            
+            .builder-sidebar {
+                border-right: none;
+                border-bottom: 1px solid #E0E0E0;
+                border-radius: 12px 12px 0 0;
+            }
+            
+            .builder-main {
+                border-radius: 0 0 12px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background Canvas -->
+    <canvas id="particle-canvas"></canvas>
+    
+    <!-- Navigation Header -->
+    <nav class="nav-header fixed top-0 left-0 right-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <h1 class="font-display text-2xl font-bold text-primary">PortfolioCraft</h1>
+                <span class="text-sm text-secondary">Resume Builder</span>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="index.html" class="text-secondary hover:text-primary transition-colors">Builder</a>
+                <a href="templates.html" class="text-secondary hover:text-primary transition-colors">Templates</a>
+                <a href="resume.html" class="text-primary font-medium border-b-2 border-accent pb-1">Resume</a>
+                <button class="btn-primary" id="export-resume-btn">Export Resume</button>
+            </div>
+            
+            <div class="md:hidden">
+                <button id="mobile-menu-btn" class="p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-resume flex items-center justify-center text-white pt-20">
+        <div class="hero-content text-center py-16">
+            <h2 class="font-display text-4xl md:text-5xl font-bold mb-4" data-splitting>
+                Interactive Resume Builder
+            </h2>
+            <p class="text-lg opacity-90 max-w-2xl mx-auto">
+                Create stunning, data-driven resumes with interactive timelines and skill visualizations
+            </p>
+        </div>
+        
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Resume Builder Interface -->
+    <main class="min-h-screen bg-gray-50 py-8">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="resume-builder flex">
+                <!-- Left Sidebar - Content Editor -->
+                <aside class="builder-sidebar w-96 p-6 fade-in stagger-delay-1">
+                    <h3 class="font-display text-xl font-bold mb-6">Resume Content</h3>
+                    
+                    <!-- Personal Information -->
+                    <div class="section-card">
+                        <h4 class="font-medium text-lg mb-4">Personal Information</h4>
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="full-name" class="form-input" placeholder="John Doe" value="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Professional Title</label>
+                            <input type="text" id="professional-title" class="form-input" placeholder="Full Stack Developer" value="Full Stack Developer">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" id="email" class="form-input" placeholder="john@example.com" value="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" id="phone" class="form-input" placeholder="+1 (555) 123-4567" value="+1 (555) 123-4567">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <input type="text" id="location" class="form-input" placeholder="San Francisco, CA" value="San Francisco, CA">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Professional Summary</label>
+                            <textarea id="summary" class="form-input form-textarea" placeholder="Brief professional summary...">Experienced full-stack developer with 5+ years building scalable web applications. Passionate about clean code, user experience, and modern web technologies. Proven track record of delivering high-quality solutions in fast-paced environments.</textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Experience Section -->
+                    <div class="section-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-medium text-lg">Work Experience</h4>
+                            <button class="btn-primary text-sm" id="add-experience-btn">Add Experience</button>
+                        </div>
+                        <div id="experience-list">
+                            <!-- Experience items will be added here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Education Section -->
+                    <div class="section-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-medium text-lg">Education</h4>
+                            <button class="btn-primary text-sm" id="add-education-btn">Add Education</button>
+                        </div>
+                        <div id="education-list">
+                            <!-- Education items will be added here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Skills Section -->
+                    <div class="section-card">
+                        <h4 class="font-medium text-lg mb-4">Skills</h4>
+                        <div class="form-group">
+                            <label class="form-label">Add New Skill</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="new-skill-name" class="form-input flex-1" placeholder="Skill name (e.g., JavaScript)">
+                                <input type="range" id="new-skill-level" class="skill-range" min="0" max="100" value="80">
+                                <span id="skill-level-display" class="text-sm text-secondary w-12">80%</span>
+                                <button class="btn-primary" id="add-skill-btn">Add</button>
+                            </div>
+                        </div>
+                        <div id="skills-list">
+                            <!-- Skills will be added here -->
+                        </div>
+                    </div>
+                </aside>
+                
+                <!-- Main Content Area - Resume Preview -->
+                <div class="builder-main flex-1 p-6 fade-in stagger-delay-2">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-display text-xl font-bold">Resume Preview</h3>
+                        <div class="flex items-center space-x-3">
+                            <button class="btn-secondary" id="import-linkedin-btn">Import from LinkedIn</button>
+                            <button class="btn-secondary" id="load-template-btn">Load Template</button>
+                            <button class="btn-primary" id="export-pdf-btn">Export PDF</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Resume Preview -->
+                    <div class="resume-preview" id="resume-preview">
+                        <div class="resume-header">
+                            <h1 class="font-display text-3xl font-bold mb-2" id="preview-name">John Doe</h1>
+                            <p class="text-xl text-accent mb-2" id="preview-title">Full Stack Developer</p>
+                            <div class="flex items-center justify-center space-x-4 text-sm text-secondary">
+                                <span id="preview-email">john@example.com</span>
+                                <span>•</span>
+                                <span id="preview-phone">+1 (555) 123-4567</span>
+                                <span>•</span>
+                                <span id="preview-location">San Francisco, CA</span>
+                            </div>
+                        </div>
+                        
+                        <div class="resume-section">
+                            <h3>Professional Summary</h3>
+                            <p id="preview-summary" class="text-secondary leading-relaxed">
+                                Experienced full-stack developer with 5+ years building scalable web applications. Passionate about clean code, user experience, and modern web technologies. Proven track record of delivering high-quality solutions in fast-paced environments.
+                            </p>
+                        </div>
+                        
+                        <div class="resume-section">
+                            <h3>Work Experience</h3>
+                            <div id="preview-experience">
+                                <!-- Experience items will be rendered here -->
+                            </div>
+                        </div>
+                        
+                        <div class="resume-section">
+                            <h3>Education</h3>
+                            <div id="preview-education">
+                                <!-- Education items will be rendered here -->
+                            </div>
+                        </div>
+                        
+                        <div class="resume-section">
+                            <h3>Skills & Expertise</h3>
+                            <div id="preview-skills">
+                                <!-- Skills will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Skills Visualization -->
+                    <div class="mt-8 bg-white rounded-lg p-6 shadow-sm fade-in stagger-delay-3">
+                        <h3 class="font-display text-xl font-bold mb-4">Interactive Skills Visualization</h3>
+                        <div id="skills-chart" class="skills-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-8">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-secondary">&copy; 2024 PortfolioCraft. Crafted with passion for creative professionals.</p>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script>
+        class ResumeBuilder {
+            constructor() {
+                this.experiences = [
+                    {
+                        id: Date.now(),
+                        title: 'Senior Full Stack Developer',
+                        company: 'Tech Solutions Inc.',
+                        period: '2022 - Present',
+                        description: 'Lead development of scalable web applications using React, Node.js, and PostgreSQL. Mentored junior developers and implemented CI/CD pipelines.'
+                    },
+                    {
+                        id: Date.now() + 1,
+                        title: 'Frontend Developer',
+                        company: 'Digital Agency Co.',
+                        period: '2020 - 2022',
+                        description: 'Developed responsive user interfaces for e-commerce platforms. Collaborated with design team to implement pixel-perfect designs.'
+                    }
+                ];
+                
+                this.education = [
+                    {
+                        id: Date.now() + 2,
+                        degree: 'Bachelor of Science in Computer Science',
+                        school: 'University of Technology',
+                        period: '2016 - 2020',
+                        description: 'Relevant coursework: Data Structures, Algorithms, Software Engineering, Database Systems'
+                    }
+                ];
+                
+                this.skills = [
+                    { name: 'JavaScript', level: 90 },
+                    { name: 'React', level: 85 },
+                    { name: 'Node.js', level: 80 },
+                    { name: 'Python', level: 75 },
+                    { name: 'PostgreSQL', level: 70 },
+                    { name: 'AWS', level: 65 }
+                ];
+                
+                this.skillsChart = null;
+                
+                this.init();
+            }
+            
+            init() {
+                this.initParticleSystem();
+                this.initEventListeners();
+                this.renderExperience();
+                this.renderEducation();
+                this.renderSkills();
+                this.initSkillsChart();
+                this.initTextEffects();
+            }
+            
+            initParticleSystem() {
+                const canvas = document.getElementById('particle-canvas');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                let particles = [];
+                let mouse = { x: 0, y: 0 };
+                
+                const resizeCanvas = () => {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                };
+                
+                const createParticles = () => {
+                    particles = [];
+                    const particleCount = Math.min(50, Math.floor(window.innerWidth / 20));
+                    
+                    for (let i = 0; i < particleCount; i++) {
+                        particles.push({
+                            x: Math.random() * canvas.width,
+                            y: Math.random() * canvas.height,
+                            vx: (Math.random() - 0.5) * 0.5,
+                            vy: (Math.random() - 0.5) * 0.5,
+                            size: Math.random() * 3 + 1,
+                            opacity: Math.random() * 0.5 + 0.2
+                        });
+                    }
+                };
+                
+                const updateParticles = () => {
+                    particles.forEach(particle => {
+                        particle.x += particle.vx;
+                        particle.y += particle.vy;
+                        
+                        const dx = mouse.x - particle.x;
+                        const dy = mouse.y - particle.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100) {
+                            particle.vx -= dx * 0.00005;
+                            particle.vy -= dy * 0.00005;
+                        }
+                        
+                        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+                        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+                        
+                        particle.x = Math.max(0, Math.min(canvas.width, particle.x));
+                        particle.y = Math.max(0, Math.min(canvas.height, particle.y));
+                    });
+                };
+                
+                const drawParticles = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    particles.forEach((particle, i) => {
+                        particles.slice(i + 1).forEach(otherParticle => {
+                            const dx = particle.x - otherParticle.x;
+                            const dy = particle.y - otherParticle.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (distance < 150) {
+                                ctx.beginPath();
+                                ctx.moveTo(particle.x, particle.y);
+                                ctx.lineTo(otherParticle.x, otherParticle.y);
+                                ctx.strokeStyle = `rgba(232, 213, 196, ${0.1 * (1 - distance / 150)})`;
+                                ctx.lineWidth = 1;
+                                ctx.stroke();
+                            }
+                        });
+                    });
+                    
+                    particles.forEach(particle => {
+                        ctx.beginPath();
+                        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(232, 213, 196, ${particle.opacity})`;
+                        ctx.fill();
+                    });
+                };
+                
+                const animate = () => {
+                    updateParticles();
+                    drawParticles();
+                    requestAnimationFrame(animate);
+                };
+                
+                window.addEventListener('resize', () => {
+                    resizeCanvas();
+                    createParticles();
+                });
+                
+                window.addEventListener('mousemove', (e) => {
+                    mouse.x = e.clientX;
+                    mouse.y = e.clientY;
+                });
+                
+                resizeCanvas();
+                createParticles();
+                animate();
+            }
+            
+            initEventListeners() {
+                // Personal information inputs
+                const personalInputs = ['full-name', 'professional-title', 'email', 'phone', 'location', 'summary'];
+                personalInputs.forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        input.addEventListener('input', () => this.updatePreview());
+                    }
+                });
+                
+                // Add experience button
+                const addExperienceBtn = document.getElementById('add-experience-btn');
+                if (addExperienceBtn) {
+                    addExperienceBtn.addEventListener('click', () => this.addExperience());
+                }
+                
+                // Add education button
+                const addEducationBtn = document.getElementById('add-education-btn');
+                if (addEducationBtn) {
+                    addEducationBtn.addEventListener('click', () => this.addEducation());
+                }
+                
+                // Skills management
+                const newSkillName = document.getElementById('new-skill-name');
+                const newSkillLevel = document.getElementById('new-skill-level');
+                const skillLevelDisplay = document.getElementById('skill-level-display');
+                const addSkillBtn = document.getElementById('add-skill-btn');
+                
+                if (newSkillLevel && skillLevelDisplay) {
+                    newSkillLevel.addEventListener('input', (e) => {
+                        skillLevelDisplay.textContent = e.target.value + '%';
+                    });
+                }
+                
+                if (addSkillBtn) {
+                    addSkillBtn.addEventListener('click', () => this.addSkill());
+                }
+                
+                // Export buttons
+                const exportPdfBtn = document.getElementById('export-pdf-btn');
+                if (exportPdfBtn) {
+                    exportPdfBtn.addEventListener('click', () => this.exportPDF());
+                }
+                
+                // Import buttons
+                const importLinkedinBtn = document.getElementById('import-linkedin-btn');
+                if (importLinkedinBtn) {
+                    importLinkedinBtn.addEventListener('click', () => this.importFromLinkedIn());
+                }
+                
+                const loadTemplateBtn = document.getElementById('load-template-btn');
+                if (loadTemplateBtn) {
+                    loadTemplateBtn.addEventListener('click', () => this.loadTemplate());
+                }
+            }
+            
+            renderExperience() {
+                const experienceList = document.getElementById('experience-list');
+                const previewExperience = document.getElementById('preview-experience');
+                
+                if (!experienceList || !previewExperience) return;
+                
+                // Render form inputs
+                experienceList.innerHTML = this.experiences.map(exp => `
+                    <div class="section-card mb-4" data-id="${exp.id}">
+                        <div class="form-group">
+                            <label class="form-label">Job Title</label>
+                            <input type="text" class="form-input" value="${exp.title}" data-field="title" onchange="resumeBuilder.updateExperience(${exp.id}, 'title', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Company</label>
+                            <input type="text" class="form-input" value="${exp.company}" data-field="company" onchange="resumeBuilder.updateExperience(${exp.id}, 'company', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Period</label>
+                            <input type="text" class="form-input" value="${exp.period}" data-field="period" onchange="resumeBuilder.updateExperience(${exp.id}, 'period', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-input form-textarea" data-field="description" onchange="resumeBuilder.updateExperience(${exp.id}, 'description', this.value)">${exp.description}</textarea>
+                        </div>
+                        <button class="btn-danger text-sm" onclick="resumeBuilder.removeExperience(${exp.id})">Remove</button>
+                    </div>
+                `).join('');
+                
+                // Render preview
+                previewExperience.innerHTML = this.experiences.map(exp => `
+                    <div class="experience-item">
+                        <div class="experience-header">
+                            <div>
+                                <span class="experience-title">${exp.title}</span>
+                                <span class="experience-company"> at ${exp.company}</span>
+                            </div>
+                            <span class="experience-period">${exp.period}</span>
+                        </div>
+                        <p class="experience-description">${exp.description}</p>
+                    </div>
+                `).join('');
+            }
+            
+            renderEducation() {
+                const educationList = document.getElementById('education-list');
+                const previewEducation = document.getElementById('preview-education');
+                
+                if (!educationList || !previewEducation) return;
+                
+                // Render form inputs
+                educationList.innerHTML = this.education.map(edu => `
+                    <div class="section-card mb-4" data-id="${edu.id}">
+                        <div class="form-group">
+                            <label class="form-label">Degree</label>
+                            <input type="text" class="form-input" value="${edu.degree}" data-field="degree" onchange="resumeBuilder.updateEducation(${edu.id}, 'degree', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">School</label>
+                            <input type="text" class="form-input" value="${edu.school}" data-field="school" onchange="resumeBuilder.updateEducation(${edu.id}, 'school', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Period</label>
+                            <input type="text" class="form-input" value="${edu.period}" data-field="period" onchange="resumeBuilder.updateEducation(${edu.id}, 'period', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-input form-textarea" data-field="description" onchange="resumeBuilder.updateEducation(${edu.id}, 'description', this.value)">${edu.description}</textarea>
+                        </div>
+                        <button class="btn-danger text-sm" onclick="resumeBuilder.removeEducation(${edu.id})">Remove</button>
+                    </div>
+                `).join('');
+                
+                // Render preview
+                previewEducation.innerHTML = this.education.map(edu => `
+                    <div class="experience-item">
+                        <div class="experience-header">
+                            <div>
+                                <span class="experience-title">${edu.degree}</span>
+                                <span class="experience-company"> at ${edu.school}</span>
+                            </div>
+                            <span class="experience-period">${edu.period}</span>
+                        </div>
+                        <p class="experience-description">${edu.description}</p>
+                    </div>
+                `).join('');
+            }
+            
+            renderSkills() {
+                const skillsList = document.getElementById('skills-list');
+                const previewSkills = document.getElementById('preview-skills');
+                
+                if (!skillsList || !previewSkills) return;
+                
+                // Render form inputs
+                skillsList.innerHTML = this.skills.map((skill, index) => `
+                    <div class="skill-input" data-index="${index}">
+                        <input type="text" class="form-input flex-1" value="${skill.name}" 
+                               onchange="resumeBuilder.updateSkill(${index}, 'name', this.value)">
+                        <input type="range" class="skill-range" min="0" max="100" value="${skill.level}" 
+                               onchange="resumeBuilder.updateSkill(${index}, 'level', this.value)">
+                        <span class="text-sm text-secondary w-12">${skill.level}%</span>
+                        <button class="btn-danger" onclick="resumeBuilder.removeSkill(${index})">×</button>
+                    </div>
+                `).join('');
+                
+                // Render preview
+                previewSkills.innerHTML = `
+                    <div class="grid grid-cols-2 gap-4">
+                        ${this.skills.map(skill => `
+                            <div class="flex items-center justify-between">
+                                <span class="font-medium">${skill.name}</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-24 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-accent h-2 rounded-full" style="width: ${skill.level}%"></div>
+                                    </div>
+                                    <span class="text-sm text-secondary">${skill.level}%</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                // Update skills chart
+                this.updateSkillsChart();
+            }
+            
+            addExperience() {
+                const newExperience = {
+                    id: Date.now(),
+                    title: 'New Position',
+                    company: 'Company Name',
+                    period: '2024 - Present',
+                    description: 'Describe your responsibilities and achievements...'
+                };
+                
+                this.experiences.push(newExperience);
+                this.renderExperience();
+                this.updatePreview();
+            }
+            
+            addEducation() {
+                const newEducation = {
+                    id: Date.now(),
+                    degree: 'Degree Name',
+                    school: 'Institution Name',
+                    period: '2020 - 2024',
+                    description: 'Relevant coursework and achievements...'
+                };
+                
+                this.education.push(newEducation);
+                this.renderEducation();
+                this.updatePreview();
+            }
+            
+            addSkill() {
+                const skillName = document.getElementById('new-skill-name').value.trim();
+                const skillLevel = parseInt(document.getElementById('new-skill-level').value);
+                
+                if (!skillName) return;
+                
+                this.skills.push({
+                    name: skillName,
+                    level: skillLevel
+                });
+                
+                // Clear inputs
+                document.getElementById('new-skill-name').value = '';
+                document.getElementById('new-skill-level').value = '80';
+                document.getElementById('skill-level-display').textContent = '80%';
+                
+                this.renderSkills();
+                this.updatePreview();
+            }
+            
+            updateExperience(id, field, value) {
+                const experience = this.experiences.find(exp => exp.id === id);
+                if (experience) {
+                    experience[field] = value;
+                    this.renderExperience();
+                    this.updatePreview();
+                }
+            }
+            
+            updateEducation(id, field, value) {
+                const edu = this.education.find(e => e.id === id);
+                if (edu) {
+                    edu[field] = value;
+                    this.renderEducation();
+                    this.updatePreview();
+                }
+            }
+            
+            updateSkill(index, field, value) {
+                if (this.skills[index]) {
+                    this.skills[index][field] = value;
+                    this.renderSkills();
+                    this.updatePreview();
+                }
+            }
+            
+            removeExperience(id) {
+                this.experiences = this.experiences.filter(exp => exp.id !== id);
+                this.renderExperience();
+                this.updatePreview();
+            }
+            
+            removeEducation(id) {
+                this.education = this.education.filter(edu => edu.id !== id);
+                this.renderEducation();
+                this.updatePreview();
+            }
+            
+            removeSkill(index) {
+                this.skills.splice(index, 1);
+                this.renderSkills();
+                this.updatePreview();
+            }
+            
+            updatePreview() {
+                const fullName = document.getElementById('full-name').value;
+                const professionalTitle = document.getElementById('professional-title').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const location = document.getElementById('location').value;
+                const summary = document.getElementById('summary').value;
+                
+                document.getElementById('preview-name').textContent = fullName;
+                document.getElementById('preview-title').textContent = professionalTitle;
+                document.getElementById('preview-email').textContent = email;
+                document.getElementById('preview-phone').textContent = phone;
+                document.getElementById('preview-location').textContent = location;
+                document.getElementById('preview-summary').textContent = summary;
+            }
+            
+            initSkillsChart() {
+                const chartContainer = document.getElementById('skills-chart');
+                if (!chartContainer) return;
+                
+                this.skillsChart = echarts.init(chartContainer);
+                this.updateSkillsChart();
+            }
+            
+            updateSkillsChart() {
+                if (!this.skillsChart) return;
+                
+                const option = {
+                    title: {
+                        text: 'Skills Proficiency',
+                        left: 'center',
+                        textStyle: {
+                            fontSize: 18,
+                            fontWeight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        trigger: 'item'
+                    },
+                    radar: {
+                        indicator: this.skills.map(skill => ({
+                            name: skill.name,
+                            max: 100
+                        })),
+                        radius: '60%',
+                        splitNumber: 5,
+                        axisLine: {
+                            lineStyle: {
+                                color: '#E8D5C4'
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: '#E8D5C4'
+                            }
+                        },
+                        splitArea: {
+                            show: true,
+                            areaStyle: {
+                                color: ['rgba(232, 213, 196, 0.1)', 'rgba(232, 213, 196, 0.2)']
+                            }
+                        }
+                    },
+                    series: [{
+                        name: 'Skills',
+                        type: 'radar',
+                        data: [{
+                            value: this.skills.map(skill => skill.level),
+                            name: 'Proficiency Level',
+                            areaStyle: {
+                                color: 'rgba(232, 213, 196, 0.3)'
+                            },
+                            lineStyle: {
+                                color: '#E8D5C4',
+                                width: 2
+                            },
+                            itemStyle: {
+                                color: '#E8D5C4'
+                            }
+                        }]
+                    }]
+                };
+                
+                this.skillsChart.setOption(option);
+            }
+            
+            initTextEffects() {
+                if (typeof Splitting !== 'undefined') {
+                    Splitting();
+                    
+                    const splitText = document.querySelectorAll('[data-splitting]');
+                    splitText.forEach(element => {
+                        const chars = element.querySelectorAll('.char');
+                        anime({
+                            targets: chars,
+                            opacity: [0, 1],
+                            translateY: [20, 0],
+                            duration: 800,
+                            delay: anime.stagger(50),
+                            easing: 'easeOutQuad'
+                        });
+                    });
+                }
+            }
+            
+            exportPDF() {
+                alert('PDF export functionality would integrate with a library like jsPDF in a real implementation.');
+            }
+            
+            importFromLinkedIn() {
+                alert('LinkedIn import functionality would integrate with the LinkedIn API in a real implementation.');
+            }
+            
+            loadTemplate() {
+                alert('Template loading functionality would allow users to choose from pre-designed resume templates.');
+            }
+        }
+        
+        // Initialize the resume builder
+        let resumeBuilder;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            resumeBuilder = new ResumeBuilder();
+        });
+    </script>
+</body>
+</html>

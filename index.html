@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortfolioCraft - Build Stunning Portfolios</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Coda&family=Hedvig+Letters+Sans&family=Jersey+15&family=Jersey+20+Charted&family=Liter&family=Luckiest+Guy&family=Oranienbaum&family=Press+Start+2P&family=Quattrocento+Sans&family=Sorts+Mill+Goudy&family=Unna&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+    <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root {
+            --bg-primary: #FAFAFA;
+            --text-primary: #1A1A1A;
+            --text-secondary: #4A4A4A;
+            --accent: #E8D5C4;
+            --accent-dark: #D4C4B0;
+            --success: #2D5A27;
+            --warning: #B8860B;
+            --error: #8B0000;
+        }
+        
+        body {
+            font-family: 'Oranienbaum', serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+        
+        .font-display {
+            font-family: 'Sorts Mill Goudy', serif;
+        }
+        
+        .font-body {
+            font-family: 'Liter', sans-serif;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #F0F0F0;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-dark);
+        }
+        
+        /* Builder Interface Styles */
+        .builder-sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid #E0E0E0;
+        }
+        
+        .builder-canvas {
+            background: #FFFFFF;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        
+        .builder-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid #E0E0E0;
+        }
+        
+        /* Drag and Drop Styles */
+        .drag-item {
+            cursor: grab;
+            transition: all 0.3s ease;
+        }
+        
+        .drag-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .drag-item:active {
+            cursor: grabbing;
+        }
+        
+        .drop-zone {
+            min-height: 100px;
+            border: 2px dashed #E0E0E0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: var(--accent);
+            background-color: rgba(232, 213, 196, 0.1);
+        }
+        
+        /* Section Styles */
+        .section-item {
+            background: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .section-item:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Preview Device Styles */
+        .device-preview {
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+        
+        .device-desktop {
+            width: 100%;
+            height: 600px;
+        }
+        
+        .device-tablet {
+            width: 768px;
+            height: 1024px;
+            margin: 0 auto;
+        }
+        
+        .device-mobile {
+            width: 375px;
+            height: 667px;
+            margin: 0 auto;
+        }
+        
+        /* Animation Classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stagger-delay-1 { animation-delay: 0.1s; }
+        .stagger-delay-2 { animation-delay: 0.2s; }
+        .stagger-delay-3 { animation-delay: 0.3s; }
+        .stagger-delay-4 { animation-delay: 0.4s; }
+        
+        /* Particle Canvas */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        /* Hero Section */
+        .hero-compact {
+            height: 20vh;
+            min-height: 200px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Navigation */
+        .nav-header {
+            background: rgba(250, 250, 250, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        /* Custom Buttons */
+        .btn-primary {
+            background: var(--accent);
+            color: var(--text-primary);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid #E0E0E0;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+        
+        /* Property Panel Styles */
+        .property-group {
+            border-bottom: 1px solid #E0E0E0;
+            padding: 16px 0;
+        }
+        
+        .property-group:last-child {
+            border-bottom: none;
+        }
+        
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .builder-sidebar,
+            .builder-panel {
+                position: fixed;
+                top: 0;
+                height: 100vh;
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .builder-panel {
+                right: 0;
+                transform: translateX(100%);
+            }
+            
+            .builder-sidebar.open,
+            .builder-panel.open {
+                transform: translateX(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-compact {
+                height: 15vh;
+                min-height: 150px;
+            }
+            
+            .device-tablet,
+            .device-mobile {
+                width: 100%;
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background Canvas -->
+    <canvas id="particle-canvas"></canvas>
+    
+    <!-- Navigation Header -->
+    <nav class="nav-header fixed top-0 left-0 right-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <h1 class="font-display text-2xl font-bold text-primary">PortfolioCraft</h1>
+                <span class="text-sm text-secondary">Build Stunning Portfolios</span>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="index.html" class="text-primary font-medium border-b-2 border-accent pb-1">Builder</a>
+                <a href="templates.html" class="text-secondary hover:text-primary transition-colors">Templates</a>
+                <a href="resume.html" class="text-secondary hover:text-primary transition-colors">Resume</a>
+                <button class="btn-primary">Export Portfolio</button>
+            </div>
+            
+            <div class="md:hidden">
+                <button id="mobile-menu-btn" class="p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-compact flex items-center justify-center text-white mt-20">
+        <div class="hero-content text-center">
+            <h2 class="font-display text-4xl md:text-5xl font-bold mb-4" data-splitting>
+                Portfolio Builder
+            </h2>
+            <p class="text-lg opacity-90 max-w-2xl mx-auto">
+                Create stunning, interactive portfolios with our drag-and-drop builder
+            </p>
+        </div>
+        
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Main Builder Interface -->
+    <main class="min-h-screen bg-gray-50 pt-8 pb-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <!-- Builder Toolbar -->
+            <div class="flex items-center justify-between mb-8 fade-in">
+                <div class="flex items-center space-x-4">
+                    <button id="sidebar-toggle" class="btn-secondary md:hidden">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-secondary">Preview:</span>
+                        <div class="flex items-center space-x-2 bg-white rounded-lg p-1 border">
+                            <button class="device-btn active px-3 py-1 rounded text-sm" data-device="desktop">Desktop</button>
+                            <button class="device-btn px-3 py-1 rounded text-sm" data-device="tablet">Tablet</button>
+                            <button class="device-btn px-3 py-1 rounded text-sm" data-device="mobile">Mobile</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                    <button class="btn-secondary" id="undo-btn">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l9 9-9 9"></path>
+                        </svg>
+                    </button>
+                    <button class="btn-secondary" id="redo-btn">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10H11a8 8 0 00-8 8v2m18-10l-9 9 9 9"></path>
+                        </svg>
+                    </button>
+                    <button class="btn-primary" id="save-btn">Save Portfolio</button>
+                </div>
+            </div>
+            
+            <!-- Builder Layout -->
+            <div class="flex gap-6">
+                <!-- Left Sidebar - Section Library -->
+                <aside class="builder-sidebar w-80 rounded-lg p-6 fade-in stagger-delay-1">
+                    <h3 class="font-display text-xl font-bold mb-6">Section Library</h3>
+                    
+                    <!-- Search -->
+                    <div class="mb-6">
+                        <input type="text" id="section-search" placeholder="Search sections..." 
+                               class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-accent">
+                    </div>
+                    
+                    <!-- Section Categories -->
+                    <div class="space-y-4">
+                        <div class="category-group">
+                            <h4 class="font-medium text-sm text-secondary mb-3 uppercase tracking-wide">Hero Sections</h4>
+                            <div class="space-y-2">
+                                <div class="drag-item section-item" draggable="true" data-section-type="hero-3d">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-accent rounded flex items-center justify-center">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium">3D Particle Hero</h5>
+                                            <p class="text-sm text-secondary">Interactive particle animation</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="drag-item section-item" draggable="true" data-section-type="hero-video">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-accent rounded flex items-center justify-center">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zM8 8v4l4-2-4-2z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium">Video Background</h5>
+                                            <p class="text-sm text-secondary">Full-screen video hero</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="drag-item section-item" draggable="true" data-section-type="hero-minimal">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-accent rounded flex items-center justify-center">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium">Minimal Hero</h5>
+                                            <p class="text-sm text-secondary">Clean typography focus</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="category-group">
+                            <h4 class="font-medium text-sm text-secondary mb-3 uppercase tracking-wide">Content Sections</h4>
+                            <div class="space-y-2">
+                                <div class="drag-item section-item" draggable="true" data-section-type="about">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-accent rounded flex items-center justify-center">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium">About Section</h5>
+                                            <p class="text-sm text-secondary">Personal introduction</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="drag-item section-item" draggable="true" data-section-type="projects">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-accent rounded flex items-center justify-center">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium">Projects Grid</h5>
+                                            <p class="text-sm text-secondary">Showcase portfolio</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="drag-item section-item" draggable="true" data-section-type="skills">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-accent rounded flex items-center justify-center">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium">Skills Section</h5>
+                                            <p class="text-sm text-secondary">Interactive skill charts</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="drag-item section-item" draggable="true" data-section-type="experience">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-accent rounded flex items-center justify-center">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium">Experience Timeline</h5>
+                                            <p class="text-sm text-secondary">Work history visualization</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="drag-item section-item" draggable="true" data-section-type="contact">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-accent rounded flex items-center justify-center">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium">Contact Section</h5>
+                                            <p class="text-sm text-secondary">Get in touch form</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+                
+                <!-- Center Canvas - Live Preview -->
+                <div class="flex-1 fade-in stagger-delay-2">
+                    <div class="builder-canvas p-6 mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-display text-xl font-bold">Portfolio Preview</h3>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Device:</span>
+                                <select id="device-selector" class="px-3 py-1 border border-gray-200 rounded text-sm">
+                                    <option value="desktop">Desktop (1200px)</option>
+                                    <option value="tablet">Tablet (768px)</option>
+                                    <option value="mobile">Mobile (375px)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Preview Container -->
+                        <div id="preview-container" class="device-preview device-desktop bg-gray-100 rounded-lg overflow-hidden">
+                            <div id="portfolio-preview" class="bg-white min-h-screen">
+                                <!-- Default Welcome Section -->
+                                <div class="welcome-section p-8 text-center bg-gradient-to-br from-gray-50 to-gray-100 min-h-96 flex items-center justify-center">
+                                    <div>
+                                        <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                            </svg>
+                                        </div>
+                                        <h3 class="font-display text-2xl font-bold mb-2">Start Building Your Portfolio</h3>
+                                        <p class="text-secondary mb-6">Drag sections from the library to begin creating your stunning portfolio</p>
+                                        <div class="drop-zone flex items-center justify-center" id="main-drop-zone">
+                                            <p class="text-secondary">Drop your first section here</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Panel - Properties & Customization -->
+                <aside class="builder-panel w-80 rounded-lg p-6 fade-in stagger-delay-3">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-display text-xl font-bold">Properties</h3>
+                        <button id="panel-toggle" class="md:hidden p-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Global Settings -->
+                    <div class="property-group">
+                        <h4 class="font-medium text-sm text-secondary mb-3 uppercase tracking-wide">Global Settings</h4>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Color Scheme</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="color" class="color-picker" id="primary-color" value="#E8D5C4">
+                                    <input type="color" class="color-picker" id="secondary-color" value="#1A1A1A">
+                                    <input type="color" class="color-picker" id="accent-color" value="#4A4A4A">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Typography</label>
+                                <select id="font-primary" class="w-full px-3 py-2 border border-gray-200 rounded">
+                                    <option value="Sorts Mill Goudy">Sorts Mill Goudy</option>
+                                    <option value="Oranienbaum">Oranienbaum</option>
+                                    <option value="Liter">Liter</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Animation Speed</label>
+                                <input type="range" id="animation-speed" min="0.1" max="2" step="0.1" value="1" class="w-full">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Section Properties -->
+                    <div class="property-group" id="section-properties" style="display: none;">
+                        <h4 class="font-medium text-sm text-secondary mb-3 uppercase tracking-wide">Section Properties</h4>
+                        <div id="section-controls" class="space-y-4">
+                            <!-- Dynamic section controls will be inserted here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Export Options -->
+                    <div class="property-group">
+                        <h4 class="font-medium text-sm text-secondary mb-3 uppercase tracking-wide">Export</h4>
+                        
+                        <div class="space-y-3">
+                            <button class="btn-primary w-full" id="export-html">Export as HTML</button>
+                            <button class="btn-secondary w-full" id="export-pdf">Export as PDF</button>
+                            <button class="btn-secondary w-full" id="share-link">Generate Share Link</button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-8">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-secondary">&copy; 2024 PortfolioCraft. Crafted with passion for creative professionals.</p>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script src="main.js"></script>
+</body>
+</html>

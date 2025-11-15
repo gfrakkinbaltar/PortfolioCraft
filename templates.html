@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Templates - PortfolioCraft</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Coda&family=Hedvig+Letters+Sans&family=Jersey+15&family=Jersey+20+Charted&family=Liter&family=Luckiest+Guy&family=Oranienbaum&family=Press+Start+2P&family=Quattrocento+Sans&family=Sorts+Mill+Goudy&family=Unna&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+    <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root {
+            --bg-primary: #FAFAFA;
+            --text-primary: #1A1A1A;
+            --text-secondary: #4A4A4A;
+            --accent: #E8D5C4;
+            --accent-dark: #D4C4B0;
+            --success: #2D5A27;
+            --warning: #B8860B;
+            --error: #8B0000;
+        }
+        
+        body {
+            font-family: 'Oranienbaum', serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+        
+        .font-display {
+            font-family: 'Sorts Mill Goudy', serif;
+        }
+        
+        .font-body {
+            font-family: 'Liter', sans-serif;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #F0F0F0;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-dark);
+        }
+        
+        /* Navigation */
+        .nav-header {
+            background: rgba(250, 250, 250, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        /* Hero Section */
+        .hero-templates {
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Template Cards */
+        .template-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .template-preview {
+            height: 300px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .template-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .template-card:hover .template-preview img {
+            transform: scale(1.05);
+        }
+        
+        .template-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .template-card:hover .template-overlay {
+            opacity: 1;
+        }
+        
+        .template-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--accent);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .template-badge.premium {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+        }
+        
+        .template-badge.free {
+            background: var(--success);
+        }
+        
+        /* Filter Tabs */
+        .filter-tab {
+            padding: 12px 24px;
+            border-radius: 25px;
+            background: #F0F0F0;
+            color: var(--text-secondary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .filter-tab.active {
+            background: var(--accent);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .filter-tab:hover {
+            background: #E0E0E0;
+            transform: translateY(-1px);
+        }
+        
+        .filter-tab.active:hover {
+            background: var(--accent-dark);
+        }
+        
+        /* Custom Buttons */
+        .btn-primary {
+            background: var(--accent);
+            color: var(--text-primary);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid #E0E0E0;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+        
+        /* Particle Canvas */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        /* Animation Classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stagger-delay-1 { animation-delay: 0.1s; }
+        .stagger-delay-2 { animation-delay: 0.2s; }
+        .stagger-delay-3 { animation-delay: 0.3s; }
+        .stagger-delay-4 { animation-delay: 0.4s; }
+        .stagger-delay-5 { animation-delay: 0.5s; }
+        .stagger-delay-6 { animation-delay: 0.6s; }
+        
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.open .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-preview {
+            width: 100%;
+            height: 70vh;
+            border: none;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .template-card {
+                margin-bottom: 20px;
+            }
+            
+            .filter-tabs {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .filter-tab {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background Canvas -->
+    <canvas id="particle-canvas"></canvas>
+    
+    <!-- Navigation Header -->
+    <nav class="nav-header fixed top-0 left-0 right-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <h1 class="font-display text-2xl font-bold text-primary">PortfolioCraft</h1>
+                <span class="text-sm text-secondary">Premium Templates</span>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="index.html" class="text-secondary hover:text-primary transition-colors">Builder</a>
+                <a href="templates.html" class="text-primary font-medium border-b-2 border-accent pb-1">Templates</a>
+                <a href="resume.html" class="text-secondary hover:text-primary transition-colors">Resume</a>
+                <button class="btn-primary">Get Started</button>
+            </div>
+            
+            <div class="md:hidden">
+                <button id="mobile-menu-btn" class="p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-templates flex items-center justify-center text-white pt-20">
+        <div class="hero-content text-center py-20">
+            <h2 class="font-display text-5xl md:text-6xl font-bold mb-6" data-splitting>
+                Portfolio Templates
+            </h2>
+            <p class="text-xl opacity-90 max-w-3xl mx-auto mb-8">
+                Choose from our curated collection of stunning, professional portfolio templates. 
+                Each template is fully customizable and designed to make you stand out.
+            </p>
+            <div class="flex items-center justify-center space-x-4">
+                <button class="btn-primary text-lg px-8 py-3">Browse All Templates</button>
+                <button class="btn-secondary text-lg px-8 py-3 bg-white text-gray-800">Watch Demo</button>
+            </div>
+        </div>
+        
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Template Categories -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-12 fade-in">
+                <h3 class="font-display text-3xl font-bold mb-4">Find Your Perfect Template</h3>
+                <p class="text-lg text-secondary max-w-2xl mx-auto">
+                    Filter by profession, style, or industry to find the template that best represents your work and personality.
+                </p>
+            </div>
+            
+            <!-- Filter Tabs -->
+            <div class="flex flex-wrap items-center justify-center gap-4 mb-12 fade-in stagger-delay-1">
+                <button class="filter-tab active" data-category="all">All Templates</button>
+                <button class="filter-tab" data-category="developer">Developers</button>
+                <button class="filter-tab" data-category="designer">Designers</button>
+                <button class="filter-tab" data-category="photographer">Photographers</button>
+                <button class="filter-tab" data-category="creative">Creative</button>
+                <button class="filter-tab" data-category="business">Business</button>
+                <button class="filter-tab" data-category="student">Students</button>
+            </div>
+            
+            <!-- Template Grid -->
+            <div id="template-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Developer Templates -->
+                <div class="template-card fade-in stagger-delay-1" data-category="developer" data-template="dev-modern">
+                    <div class="template-preview">
+                        <img src="https://kimi-web-img.moonshot.cn/img/templatesjungle.com/9ba6bc61f91e87b0088f5f5a812698c31cd53dfc.png" alt="Modern Developer Portfolio">
+                        <div class="template-badge premium">Premium</div>
+                        <div class="template-overlay">
+                            <button class="btn-primary" onclick="previewTemplate('dev-modern')">Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-display text-xl font-bold mb-2">Modern Developer</h4>
+                        <p class="text-secondary mb-4">Clean, code-focused design perfect for showcasing technical projects and skills.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Features:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="template-card fade-in stagger-delay-2" data-category="developer" data-template="dev-minimal">
+                    <div class="template-preview">
+                        <img src="https://kimi-web-img.moonshot.cn/img/www.webfx.com/c2f7927cb3f35bc70b63d8e0621285161cf4efe7.jpg" alt="Minimal Developer Portfolio">
+                        <div class="template-badge free">Free</div>
+                        <div class="template-overlay">
+                            <button class="btn-primary" onclick="previewTemplate('dev-minimal')">Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-display text-xl font-bold mb-2">Minimal Developer</h4>
+                        <p class="text-secondary mb-4">Simple, elegant design focused on clean typography and minimal aesthetics.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Features:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="template-card fade-in stagger-delay-3" data-category="developer" data-template="dev-creative">
+                    <div class="template-preview">
+                        <img src="https://kimi-web-img.moonshot.cn/img/essential-addons.com/0465c3611ace4fb32cf384d8e24ba2b24c42292a.jpeg" alt="Creative Developer Portfolio">
+                        <div class="template-badge premium">Premium</div>
+                        <div class="template-overlay">
+                            <button class="btn-primary" onclick="previewTemplate('dev-creative')">Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-display text-xl font-bold mb-2">Creative Developer</h4>
+                        <p class="text-secondary mb-4">Bold, artistic design with interactive elements and creative animations.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Features:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Designer Templates -->
+                <div class="template-card fade-in stagger-delay-1" data-category="designer" data-template="design-portfolio">
+                    <div class="template-preview">
+                        <img src="https://kimi-web-img.moonshot.cn/img/mir-s3-cdn-cf.behance.net/1b16d85a79d73052c5257553aeb264a2719df4f2.png" alt="Designer Portfolio">
+                        <div class="template-badge premium">Premium</div>
+                        <div class="template-overlay">
+                            <button class="btn-primary" onclick="previewTemplate('design-portfolio')">Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-display text-xl font-bold mb-2">Designer Portfolio</h4>
+                        <p class="text-secondary mb-4">Visual-first design perfect for showcasing design projects and creative work.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Features:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="template-card fade-in stagger-delay-2" data-category="designer" data-template="design-agency">
+                    <div class="template-preview">
+                        <img src="https://kimi-web-img.moonshot.cn/img/image.freepik.com/3b22b25535bcb207e132bdd5eed72dc059254a08.jpg" alt="Agency Portfolio">
+                        <div class="template-badge premium">Premium</div>
+                        <div class="template-overlay">
+                            <button class="btn-primary" onclick="previewTemplate('design-agency')">Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-display text-xl font-bold mb-2">Agency Style</h4>
+                        <p class="text-secondary mb-4">Professional agency layout with team sections and case studies.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Features:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="template-card fade-in stagger-delay-3" data-category="designer" data-template="design-minimal">
+                    <div class="template-preview">
+                        <img src="https://kimi-web-img.moonshot.cn/img/figmaelements.com/a9836ea343c31f54db8615f87c1652875cd1b6b8.png" alt="Minimal Design Portfolio">
+                        <div class="template-badge free">Free</div>
+                        <div class="template-overlay">
+                            <button class="btn-primary" onclick="previewTemplate('design-minimal')">Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-display text-xl font-bold mb-2">Minimal Design</h4>
+                        <p class="text-secondary mb-4">Clean, minimalist approach that lets your work speak for itself.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Features:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Creative Templates -->
+                <div class="template-card fade-in stagger-delay-1" data-category="creative" data-template="creative-artist">
+                    <div class="template-preview">
+                        <img src="https://kimi-web-img.moonshot.cn/img/cdn.dribbble.com/b7d0b32f5768db1fe2434d394b9bebdeb907b127.png" alt="Artist Portfolio">
+                        <div class="template-badge premium">Premium</div>
+                        <div class="template-overlay">
+                            <button class="btn-primary" onclick="previewTemplate('creative-artist')">Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-display text-xl font-bold mb-2">Artist Portfolio</h4>
+                        <p class="text-secondary mb-4">Artistic and expressive design perfect for creative professionals and artists.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Features:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="template-card fade-in stagger-delay-2" data-category="creative" data-template="creative-writer">
+                    <div class="template-preview">
+                        <img src="https://kimi-web-img.moonshot.cn/img/www.webfx.com/3d301f07588e352d8c176d2199c25957a89c2dfb.jpg" alt="Writer Portfolio">
+                        <div class="template-badge free">Free</div>
+                        <div class="template-overlay">
+                            <button class="btn-primary" onclick="previewTemplate('creative-writer')">Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-display text-xl font-bold mb-2">Writer Portfolio</h4>
+                        <p class="text-secondary mb-4">Typography-focused design perfect for writers, authors, and content creators.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Features:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="template-card fade-in stagger-delay-3" data-category="creative" data-template="creative-agency">
+                    <div class="template-preview">
+                        <img src="https://kimi-web-img.moonshot.cn/img/mir-s3-cdn-cf.behance.net/c58428f321e8a4b3d9e5b9bf942a15e2e6bb407a.jpg" alt="Creative Agency">
+                        <div class="template-badge premium">Premium</div>
+                        <div class="template-overlay">
+                            <button class="btn-primary" onclick="previewTemplate('creative-agency')">Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-display text-xl font-bold mb-2">Creative Agency</h4>
+                        <p class="text-secondary mb-4">Bold, innovative design for creative agencies and studios.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Features:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Business Templates -->
+                <div class="template-card fade-in stagger-delay-1" data-category="business" data-template="business-consultant">
+                    <div class="template-preview">
+                        <img src="https://kimi-web-img.moonshot.cn/img/images.template.net/ec717c94541672bdfd3f6261d1f52371aa4dadd5.jpg" alt="Consultant Portfolio">
+                        <div class="template-badge premium">Premium</div>
+                        <div class="template-overlay">
+                            <button class="btn-primary" onclick="previewTemplate('business-consultant')">Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-display text-xl font-bold mb-2">Business Consultant</h4>
+                        <p class="text-secondary mb-4">Professional, trustworthy design for consultants and business professionals.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Features:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="template-card fade-in stagger-delay-2" data-category="business" data-template="business-corporate">
+                    <div class="template-preview">
+                        <img src="https://kimi-web-img.moonshot.cn/img/mir-s3-cdn-cf.behance.net/1b16d85a79d73052c5257553aeb264a2719df4f2.png" alt="Corporate Portfolio">
+                        <div class="template-badge free">Free</div>
+                        <div class="template-overlay">
+                            <button class="btn-primary" onclick="previewTemplate('business-corporate')">Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-display text-xl font-bold mb-2">Corporate Professional</h4>
+                        <p class="text-secondary mb-4">Clean, corporate design for professionals and executives.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Features:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Student Templates -->
+                <div class="template-card fade-in stagger-delay-1" data-category="student" data-template="student-graduate">
+                    <div class="template-preview">
+                        <img src="https://kimi-web-img.moonshot.cn/img/www.webfx.com/c2f7927cb3f35bc70b63d8e0621285161cf4efe7.jpg" alt="Graduate Portfolio">
+                        <div class="template-badge free">Free</div>
+                        <div class="template-overlay">
+                            <button class="btn-primary" onclick="previewTemplate('student-graduate')">Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-display text-xl font-bold mb-2">Graduate Portfolio</h4>
+                        <p class="text-secondary mb-4">Perfect for recent graduates showcasing academic projects and skills.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Features:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="template-card fade-in stagger-delay-2" data-category="student" data-template="student-intern">
+                    <div class="template-preview">
+                        <img src="https://kimi-web-img.moonshot.cn/img/figmaelements.com/a9836ea343c31f54db8615f87c1652875cd1b6b8.png" alt="Intern Portfolio">
+                        <div class="template-badge free">Free</div>
+                        <div class="template-overlay">
+                            <button class="btn-primary" onclick="previewTemplate('student-intern')">Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-display text-xl font-bold mb-2">Internship Seeker</h4>
+                        <p class="text-secondary mb-4">Professional template designed for students seeking internships and entry-level positions.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-secondary">Features:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Load More Button -->
+            <div class="text-center mt-12 fade-in stagger-delay-6">
+                <button class="btn-primary px-8 py-3" id="load-more-btn">
+                    Load More Templates
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Template Preview Modal -->
+    <div id="template-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex items-center justify-between p-6 border-b">
+                <h3 class="font-display text-xl font-bold" id="modal-title">Template Preview</h3>
+                <button id="close-modal" class="p-2 hover:bg-gray-100 rounded">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <iframe id="template-preview" class="modal-preview" src="about:blank"></iframe>
+                <div class="flex items-center justify-between mt-6">
+                    <div class="flex items-center space-x-4">
+                        <button class="btn-primary" id="use-template-btn">Use This Template</button>
+                        <button class="btn-secondary" id="customize-template-btn">Customize First</button>
+                    </div>
+                    <div class="text-sm text-secondary">
+                        <span id="template-features">Premium Template • Fully Responsive • 3D Effects</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-8">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-secondary">&copy; 2024 PortfolioCraft. Crafted with passion for creative professionals.</p>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script>
+        // Template data
+        const templates = {
+            'dev-modern': {
+                name: 'Modern Developer Portfolio',
+                category: 'developer',
+                type: 'premium',
+                features: 'Premium Template • 3D Hero • Project Showcase • Skills Visualization',
+                previewUrl: 'index.html'
+            },
+            'dev-minimal': {
+                name: 'Minimal Developer Portfolio',
+                category: 'developer',
+                type: 'free',
+                features: 'Free Template • Clean Design • Responsive • Fast Loading',
+                previewUrl: 'index.html'
+            },
+            'dev-creative': {
+                name: 'Creative Developer Portfolio',
+                category: 'developer',
+                type: 'premium',
+                features: 'Premium Template • Interactive Elements • Particle Effects • Smooth Animations',
+                previewUrl: 'index.html'
+            },
+            'design-portfolio': {
+                name: 'Designer Portfolio',
+                category: 'designer',
+                type: 'premium',
+                features: 'Premium Template • Visual Focus • Gallery Showcase • Brand Integration',
+                previewUrl: 'index.html'
+            },
+            'design-agency': {
+                name: 'Agency Style Portfolio',
+                category: 'designer',
+                type: 'premium',
+                features: 'Premium Template • Team Sections • Case Studies • Client Testimonials',
+                previewUrl: 'index.html'
+            },
+            'design-minimal': {
+                name: 'Minimal Design Portfolio',
+                category: 'designer',
+                type: 'free',
+                features: 'Free Template • Typography Focus • Clean Layout • Minimal Animations',
+                previewUrl: 'index.html'
+            },
+            'creative-artist': {
+                name: 'Artist Portfolio',
+                category: 'creative',
+                type: 'premium',
+                features: 'Premium Template • Artistic Design • Gallery Focus • Creative Freedom',
+                previewUrl: 'index.html'
+            },
+            'creative-writer': {
+                name: 'Writer Portfolio',
+                category: 'creative',
+                type: 'free',
+                features: 'Free Template • Typography Excellence • Content Focus • Reading Experience',
+                previewUrl: 'index.html'
+            },
+            'creative-agency': {
+                name: 'Creative Agency Portfolio',
+                category: 'creative',
+                type: 'premium',
+                features: 'Premium Template • Bold Design • Innovation Focus • Creative Showcase',
+                previewUrl: 'index.html'
+            },
+            'business-consultant': {
+                name: 'Business Consultant Portfolio',
+                category: 'business',
+                type: 'premium',
+                features: 'Premium Template • Professional Design • Trust Building • Business Focus',
+                previewUrl: 'index.html'
+            },
+            'business-corporate': {
+                name: 'Corporate Professional Portfolio',
+                category: 'business',
+                type: 'free',
+                features: 'Free Template • Corporate Style • Professional Layout • Executive Focus',
+                previewUrl: 'index.html'
+            },
+            'student-graduate': {
+                name: 'Graduate Portfolio',
+                category: 'student',
+                type: 'free',
+                features: 'Free Template • Academic Focus • Project Showcase • Career Ready',
+                previewUrl: 'index.html'
+            },
+            'student-intern': {
+                name: 'Internship Seeker Portfolio',
+                category: 'student',
+                type: 'free',
+                features: 'Free Template • Entry Level • Skills Highlight • Professional Growth',
+                previewUrl: 'index.html'
+            }
+        };
+        
+        // Initialize particle system
+        function initParticleSystem() {
+            const canvas = document.getElementById('particle-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let mouse = { x: 0, y: 0 };
+            
+            const resizeCanvas = () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            };
+            
+            const createParticles = () => {
+                particles = [];
+                const particleCount = Math.min(50, Math.floor(window.innerWidth / 20));
+                
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        size: Math.random() * 3 + 1,
+                        opacity: Math.random() * 0.5 + 0.2
+                    });
+                }
+            };
+            
+            const updateParticles = () => {
+                particles.forEach(particle => {
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    
+                    const dx = mouse.x - particle.x;
+                    const dy = mouse.y - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 100) {
+                        particle.vx -= dx * 0.00005;
+                        particle.vy -= dy * 0.00005;
+                    }
+                    
+                    if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+                    if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+                    
+                    particle.x = Math.max(0, Math.min(canvas.width, particle.x));
+                    particle.y = Math.max(0, Math.min(canvas.height, particle.y));
+                });
+            };
+            
+            const drawParticles = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach((particle, i) => {
+                    particles.slice(i + 1).forEach(otherParticle => {
+                        const dx = particle.x - otherParticle.x;
+                        const dy = particle.y - otherParticle.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 150) {
+                            ctx.beginPath();
+                            ctx.moveTo(particle.x, particle.y);
+                            ctx.lineTo(otherParticle.x, otherParticle.y);
+                            ctx.strokeStyle = `rgba(232, 213, 196, ${0.1 * (1 - distance / 150)})`;
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    });
+                });
+                
+                particles.forEach(particle => {
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(232, 213, 196, ${particle.opacity})`;
+                    ctx.fill();
+                });
+            };
+            
+            const animate = () => {
+                updateParticles();
+                drawParticles();
+                requestAnimationFrame(animate);
+            };
+            
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                createParticles();
+            });
+            
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            });
+            
+            resizeCanvas();
+            createParticles();
+            animate();
+        }
+        
+        // Filter functionality
+        function initFilters() {
+            const filterTabs = document.querySelectorAll('.filter-tab');
+            const templateCards = document.querySelectorAll('.template-card');
+            
+            filterTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Update active tab
+                    filterTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const category = tab.dataset.category;
+                    
+                    // Filter templates
+                    templateCards.forEach(card => {
+                        if (category === 'all' || card.dataset.category === category) {
+                            card.style.display = 'block';
+                            anime({
+                                targets: card,
+                                opacity: [0, 1],
+                                translateY: [20, 0],
+                                duration: 400,
+                                easing: 'easeOutQuad'
+                            });
+                        } else {
+                            anime({
+                                targets: card,
+                                opacity: 0,
+                                translateY: -20,
+                                duration: 200,
+                                easing: 'easeInQuad',
+                                complete: () => {
+                                    card.style.display = 'none';
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        }
+        
+        // Template preview modal
+        function previewTemplate(templateId) {
+            const template = templates[templateId];
+            if (!template) return;
+            
+            const modal = document.getElementById('template-modal');
+            const title = document.getElementById('modal-title');
+            const preview = document.getElementById('template-preview');
+            const features = document.getElementById('template-features');
+            
+            title.textContent = template.name;
+            preview.src = template.previewUrl;
+            features.textContent = template.features;
+            
+            modal.classList.add('open');
+            
+            // Store current template for use buttons
+            modal.dataset.templateId = templateId;
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('template-modal');
+            modal.classList.remove('open');
+        }
+        
+        // Initialize text effects
+        function initTextEffects() {
+            if (typeof Splitting !== 'undefined') {
+                Splitting();
+                
+                const splitText = document.querySelectorAll('[data-splitting]');
+                splitText.forEach(element => {
+                    const chars = element.querySelectorAll('.char');
+                    anime({
+                        targets: chars,
+                        opacity: [0, 1],
+                        translateY: [20, 0],
+                        duration: 800,
+                        delay: anime.stagger(50),
+                        easing: 'easeOutQuad'
+                    });
+                });
+            }
+        }
+        
+        // Template actions
+        function useTemplate(templateId) {
+            // Redirect to builder with template
+            window.location.href = `index.html?template=${templateId}`;
+        }
+        
+        function customizeTemplate(templateId) {
+            // Redirect to builder with template and customization mode
+            window.location.href = `index.html?template=${templateId}&customize=true`;
+        }
+        
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            initParticleSystem();
+            initFilters();
+            initTextEffects();
+            
+            // Modal event listeners
+            const modal = document.getElementById('template-modal');
+            const closeBtn = document.getElementById('close-modal');
+            const useTemplateBtn = document.getElementById('use-template-btn');
+            const customizeTemplateBtn = document.getElementById('customize-template-btn');
+            
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+            
+            useTemplateBtn.addEventListener('click', () => {
+                const templateId = modal.dataset.templateId;
+                useTemplate(templateId);
+            });
+            
+            customizeTemplateBtn.addEventListener('click', () => {
+                const templateId = modal.dataset.templateId;
+                customizeTemplate(templateId);
+            });
+            
+            // Load more button
+            const loadMoreBtn = document.getElementById('load-more-btn');
+            loadMoreBtn.addEventListener('click', () => {
+                // This would typically load more templates from an API
+                alert('More templates coming soon!');
+            });
+            
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            mobileMenuBtn.addEventListener('click', () => {
+                alert('Mobile menu functionality coming soon!');
+            });
+        });
+    </script>
+</body>
+</html>
