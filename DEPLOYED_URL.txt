@@ -1,1 +1,20 @@
-https://portfoliocraft-gai7us-969g89awj-rahbii-2903s-projects.vercel.app
+Production Deployment Successful!
+========================================
+
+Deployed: November 16, 2025
+Production URL: https://portfoliocraft-n061t5nvy-rahbii-2903s-projects.vercel.app
+Inspect URL: https://vercel.com/rahbii-2903s-projects/portfoliocraft/EAUNp36JT1kUzbEeiWcFChYHovBS
+
+Project: portfoliocraft
+Team: rahbii-2903s-projects
+
+Build Status: ✅ Success
+Framework: Vite
+Output Directory: dist
+
+---
+
+Notes:
+- GitHub connection attempted but repo doesn't exist yet
+- Deployed successfully via Vercel CLI
+- To set up continuous deployment, create the GitHub repo at: https://github.com/gaius/portfoliocraft
