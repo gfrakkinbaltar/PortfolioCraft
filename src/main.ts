@@ -5,7 +5,6 @@ import { AnimationController } from './lib/animations'
 import type { PortfolioSection } from './types/portfolio'
 
 class PortfolioCraftApp {
-  private particleSystem: ParticleSystem | null = null
   private animationController: AnimationController
   private currentDevice: 'desktop' | 'tablet' | 'mobile' = 'desktop'
   
@@ -40,7 +39,7 @@ class PortfolioCraftApp {
       const canvas = document.getElementById('particle-canvas')
       if (canvas && window.innerWidth > 768) {
         // Only init on larger screens for performance
-        this.particleSystem = new ParticleSystem('particle-canvas')
+        new ParticleSystem('particle-canvas')
       }
     } catch (error) {
       console.warn('Particle system failed to initialize:', error)

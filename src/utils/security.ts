@@ -8,7 +8,7 @@
  * @param {string} input - Raw HTML string
  * @returns {string} Sanitized HTML
  */
-export function sanitizeHTML(input) {
+export function sanitizeHTML(input: string): string {
     const div = document.createElement('div');
     div.textContent = input;
     return div.innerHTML;
@@ -19,7 +19,7 @@ export function sanitizeHTML(input) {
  * @param {string} url - URL to sanitize
  * @returns {string} Sanitized URL or empty string
  */
-export function sanitizeURL(url) {
+export function sanitizeURL(url: string): string {
     try {
         const parsed = new URL(url, window.location.origin);
         // Only allow http, https, mailto protocols
