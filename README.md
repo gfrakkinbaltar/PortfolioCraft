@@ -1,7 +1,7 @@
 # PortfolioCraft - Professional Portfolio Builder
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/gaius/portfoliocraft)
-[![Version](https://img.shields.io/badge/version-2.0.0-blue)](https://github.com/gaius/portfoliocraft)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/gfrakkinbaltar/PortfolioCraft)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue)](https://github.com/gfrakkinbaltar/PortfolioCraft)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 A modern, interactive portfolio builder with advanced animations, drag-and-drop functionality, and real-time preview. Built with TypeScript, Vite, and cutting-edge web technologies.
@@ -54,7 +54,7 @@ A modern, interactive portfolio builder with advanced animations, drag-and-drop 
 
 ```bash
 # Clone the repository
-git clone https://github.com/gaius/portfoliocraft.git
+git clone https://github.com/gfrakkinbaltar/PortfolioCraft.git
 cd portfoliocraft
 
 # Install dependencies
@@ -315,8 +315,8 @@ MIT © 2024-2025 Gaius
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/gaius/portfoliocraft/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/gaius/portfoliocraft/discussions)
+- **Issues**: [GitHub Issues](https://github.com/gfrakkinbaltar/PortfolioCraft/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/gfrakkinbaltar/PortfolioCraft/discussions)
 - **Email**: gaius@gai7us.com
 
 ---

@@ -20,4 +20,16 @@ out/
 # OS
 .DS_Store
 Thumbs.db
+
+# Deployment
 .vercel
+
+# Logs
+*.log
+deploy.log
+
+# Test files
+test.html
+
+# Archives
+*.zip
