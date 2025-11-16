@@ -1,18 +1,52 @@
 {
   "name": "portfoliocraft",
-  "version": "1.0.0",
-  "description": "PortfolioCraft - Professional web application",
+  "version": "2.0.0",
+  "description": "Professional portfolio builder with advanced animations and 3D effects",
+  "type": "module",
   "author": "Gaius",
   "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
+  },
+  "dependencies": {
+    "animejs": "^3.2.2",
+    "matter-js": "^0.19.0",
+    "echarts": "^5.5.0",
+    "three": "^0.160.0",
+    "pixi.js": "^7.4.0",
+    "splitting": "^1.0.6",
+    "typed.js": "^2.1.0",
+    "zustand": "^4.5.0",
+    "p5": "^1.9.0"
+  },
+  "devDependencies": {
+    "@types/matter-js": "^0.19.6",
+    "@types/three": "^0.160.0",
+    "@types/p5": "^1.7.6",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/gaius/portfoliocraft"
   },
-  "devDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch"
-  }
+  "keywords": [
+    "portfolio",
+    "builder",
+    "web-design",
+    "animations",
+    "3d-graphics"
+  ]
 }
